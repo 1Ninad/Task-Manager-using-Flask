@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="GET">
+    <input type="text" name="search" placeholder="Search tasks..." value="{{ search_query }}">
+    <button type="submit">Search</button>
+</form>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.title.label }} 
+        {{ form.title(size=30) }}<br>
+        {{ form.description.label }} 
+        {{ form.description(cols=30, rows=5) }}<br>
+        {{ form.priority.label }} 
+        {{ form.priority(size=3) }}<br>
+        {{ form.submit() }}
+    </div>
+</form>
+
+<h2>Tasks</h2>
+<ul>
+    {% if tasks %}
+        {% for task in tasks %}
+        <li>
+            <strong>{{ task.title }}</strong> - {{ task.description }} - <em>Priority: {{ task.priority }}</em>
+            <a href="{{ url_for('delete', task_id=task.id) }}">Delete</a>
+            <a href="{{ url_for('update', task_id=task.id) }}">Update</a>
+        </li>
+        {% endfor %}
+    {% else %}
+        <li>No tasks available.</li>
+    {% endif %}
+</ul>
+{% endblock %}
