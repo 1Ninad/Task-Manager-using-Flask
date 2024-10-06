@@ -2,6 +2,10 @@ from flask import Flask, render_template, redirect, url_for, request
 from models import db, Task
 from forms import TaskForm
 
+# Stack to keep track of actions for undo/redo
+action_history = []  # Action history for undo
+redo_stack = []  # Stack for redo actions
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -15,7 +19,7 @@ def create_tables():
 def index():
     form = TaskForm()
     if form.validate_on_submit():
-        print(f"Title: {form.title.data}, Description: {form.description.data}, Priority: {form.priority.data}")  # Debug
+        # Create and add the new task
         new_task = Task(
             title=form.title.data,
             description=form.description.data,
@@ -23,22 +27,84 @@ def index():
         )
         db.session.add(new_task)
         db.session.commit()
-        print("New task added.")  # Debug
+        
+        # Log the action for undo
+        action_history.append(('add', new_task))
+        
         return redirect(url_for('index'))
 
     search_query = request.args.get('search', '')
     tasks = Task.query.filter(Task.title.contains(search_query) | Task.description.contains(search_query)).order_by(Task.priority).all()
-    print(f"Tasks retrieved: {tasks}")  # Debug
 
     return render_template('tasks.html', form=form, tasks=tasks, search_query=search_query)
-
 
 @app.route('/delete/<int:task_id>')
 def delete(task_id):
     task = Task.query.get(task_id)
     if task:
+        # Create a copy of the task data before deletion
+        task_data = {
+            'id': task.id,
+            'title': task.title,
+            'description': task.description,
+            'priority': task.priority
+        }
         db.session.delete(task)
         db.session.commit()
+        
+        # Log the action for undo, storing task data
+        action_history.append(('delete', task_data))
+        
+    return redirect(url_for('index'))
+
+@app.route('/undo')
+def undo():
+    if action_history:
+        last_action = action_history.pop()  # Get the last action
+        action_type = last_action[0]
+
+        if action_type == 'add':
+            # Undo the addition by deleting the task
+            task = last_action[1]
+            db.session.delete(task)
+            db.session.commit()
+            redo_stack.append(('delete', task))  # Push the action to redo stack
+            
+        elif action_type == 'delete':
+            # Undo the deletion by adding the task back
+            task_data = last_action[1]
+            restored_task = Task(
+                id=task_data['id'],
+                title=task_data['title'],
+                description=task_data['description'],
+                priority=task_data['priority']
+            )
+            db.session.add(restored_task)  # Add the deleted task back
+            db.session.commit()
+            redo_stack.append(('add', restored_task))  # Push the action to redo stack
+            
+    return redirect(url_for('index'))
+
+@app.route('/redo')
+def redo():
+    if redo_stack:
+        last_action = redo_stack.pop()  # Get the last action to redo
+        action_type = last_action[0]
+        
+        if action_type == 'add':
+            # Redo the addition
+            task = last_action[1]
+            db.session.add(task)
+            db.session.commit()
+            action_history.append(('add', task))  # Push the action back to the undo stack
+            
+        elif action_type == 'delete':
+            # Redo the deletion
+            task = last_action[1]
+            db.session.delete(task)
+            db.session.commit()
+            action_history.append(('delete', task))  # Push the action back to the undo stack
+            
     return redirect(url_for('index'))
 
 @app.route('/update/<int:task_id>', methods=['GET', 'POST'])
@@ -46,10 +112,17 @@ def update(task_id):
     task = Task.query.get(task_id)
     form = TaskForm(obj=task)
     if form.validate_on_submit():
+        # Log the current state of the task before update for undo functionality
+        old_task = Task(title=task.title, description=task.description, priority=task.priority)
+        
+        # Update the task with new data
         task.title = form.title.data
         task.description = form.description.data
-        task.priority = form.priority.data  # Update priority
+        task.priority = form.priority.data
         db.session.commit()
+
+        # Log the action for undo
+        action_history.append(('update', old_task, task))  # Log old task and updated task
         return redirect(url_for('index'))
 
     return render_template('tasks.html', form=form, tasks=Task.query.all(), updating=True, task=task)
