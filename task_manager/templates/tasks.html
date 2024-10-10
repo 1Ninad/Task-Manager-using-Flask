@@ -2,13 +2,15 @@
 
 {% block content %}
 <div class="container">
+    <!-- Search form with autocomplete -->
     <form method="GET">
-        <input type="text" name="search" placeholder="Search tasks..." value="{{ search_query }}">
+        <input type="text" id="searchBox" onkeyup="fetchSuggestions()" placeholder="Search tasks..." name="search" value="{{ search_query }}">
+        <ul id="suggestionsList"></ul>
         <button type="submit">Search</button>
         <a href="{{ url_for('undo') }}" class="action-button">Undo</a>
-        
     </form>
 
+    <!-- Task creation form -->
     <form method="POST">
         {{ form.hidden_tag() }}
         <div>
@@ -22,6 +24,7 @@
         </div>
     </form>
 
+    <!-- Display list of tasks -->
     <ul>
         {% if tasks %}
             {% for task in tasks %}
@@ -36,4 +39,27 @@
         {% endif %}
     </ul>
 </div>
+
+<!-- JavaScript for autocomplete functionality -->
+<script>
+    function fetchSuggestions() {
+        const query = document.getElementById('searchBox').value;
+        if (query.length < 1) {
+            document.getElementById('suggestionsList').innerHTML = '';
+            return;
+        }
+
+        fetch(`/autocomplete?prefix=${query}`)
+            .then(response => response.json())
+            .then(suggestions => {
+                const suggestionsList = document.getElementById('suggestionsList');
+                suggestionsList.innerHTML = '';
+                suggestions.forEach(title => {
+                    const li = document.createElement('li');
+                    li.textContent = title;
+                    suggestionsList.appendChild(li);
+                });
+            });
+    }
+</script>
 {% endblock %}

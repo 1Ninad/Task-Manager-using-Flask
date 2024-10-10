@@ -134,6 +134,26 @@ ul li a:hover {
     color: rgb(255, 158, 11); /* Keep the hover color the same */
 }
 
+#suggestionsList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid rgb(57, 59, 59); /* Match your input border color */
+    position: absolute; /* Allow for dropdown appearance */
+    background-color: rgb(57, 59, 59); /* Match background color */
+    z-index: 1000; /* Ensure it appears above other elements */
+    width: calc(100% - 20px); /* Adjust width to match input */
+}
+
+#suggestionsList li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+#suggestionsList li:hover {
+    background-color: rgb(255, 158, 11); /* Highlight on hover */
+}
+
 /* Media Queries for Responsiveness */
 
 /* For screens smaller than 768px (tablets, phones) */

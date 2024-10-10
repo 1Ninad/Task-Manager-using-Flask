@@ -1,10 +1,12 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, jsonify  # Added jsonify import
 from models import db, Task
 from forms import TaskForm
+from bst import BST
 
 # Stack to keep track of actions for undo/redo
 action_history = []  # Action history for undo
 redo_stack = []  # Stack for redo actions
+tasks_bst = BST()  # Initialize the BST at the top level of your file
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
@@ -14,6 +16,13 @@ db.init_app(app)
 @app.before_first_request
 def create_tables():
     db.create_all()
+    populate_bst_with_tasks()  # Populate BST with initial tasks
+
+def populate_bst_with_tasks():
+    """Fetch tasks from the database and insert their titles into the BST."""
+    tasks = Task.query.all()  # Fetch all tasks from the database
+    for task in tasks:
+        tasks_bst.insert(task.title)  # Insert each task title into the BST
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -28,6 +37,9 @@ def index():
         db.session.add(new_task)
         db.session.commit()
         
+        # Insert task title into the BST
+        tasks_bst.insert(new_task.title)  # Insert the title into the BST
+
         # Log the action for undo
         action_history.append(('add', new_task))
         
@@ -54,7 +66,10 @@ def delete(task_id):
         
         # Log the action for undo, storing task data
         action_history.append(('delete', task_data))
-        
+
+        # Optionally, remove task title from the BST (implement remove method if needed)
+        # tasks_bst.remove(task.title)
+
     return redirect(url_for('index'))
 
 @app.route('/undo')
@@ -126,6 +141,13 @@ def update(task_id):
         return redirect(url_for('index'))
 
     return render_template('tasks.html', form=form, tasks=Task.query.all(), updating=True, task=task)
+
+# Add the autocomplete endpoint
+@app.route('/autocomplete', methods=['GET'])
+def autocomplete():
+    prefix = request.args.get('prefix', '')
+    suggestions = tasks_bst.search_prefix(prefix)  # Use the BST to find suggestions
+    return jsonify(suggestions)  # Return suggestions as JSON
 
 if __name__ == '__main__':
     app.run(debug=True, port=5003)
