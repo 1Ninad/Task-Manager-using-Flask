@@ -1,65 +1,55 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div class="container">
-    <!-- Search form with autocomplete -->
     <form method="GET">
         <input type="text" id="searchBox" onkeyup="fetchSuggestions()" placeholder="Search tasks..." name="search" value="{{ search_query }}">
-        <ul id="suggestionsList"></ul>
-        <button type="submit">Search</button>
-        <a href="{{ url_for('undo') }}" class="action-button">Undo</a>
+
+        <button class="action-button">Search</button>
+        <button class="action-button">Undo</button>
+        
     </form>
 
-    <!-- Task creation form -->
     <form method="POST">
         {{ form.hidden_tag() }}
         <div>
             {{ form.title.label }} 
-            {{ form.title(size=30) }}<br>
+            {{ form.title(size=30, class_='action-button') }}<br>
             {{ form.description.label }} 
-            {{ form.description(cols=30, rows=5) }}<br>
+            {{ form.description(cols=30, rows=5, class_='action-button') }}<br>
             {{ form.priority.label }} 
-            {{ form.priority(size=3) }}<br>
-            {{ form.submit() }}
+            {{ form.priority(size=3, class_='action-button') }}<br>
+            {{ form.submit(class_='action-button') }} 
         </div>
     </form>
+    
 
-    <!-- Display list of tasks -->
     <ul>
         {% if tasks %}
             {% for task in tasks %}
             <li>
-                <strong>{{ task.title }}</strong> - {{ task.description }} - <em>Priority: {{ task.priority }}</em>
-                <a href="{{ url_for('delete', task_id=task.id) }}">Delete</a>
-                <a href="{{ url_for('update', task_id=task.id) }}">Update</a>
+                <div class="task-details" id="task-{{ task.id }}">
+                    <input type="checkbox" onclick="toggleComplete({{ task.id }})"> 
+                    <span class="task-text"><strong>{{ task.title }}</strong> - {{ task.description }} - <em>Priority: {{ task.priority }}</em></span>
+                </div>
+                <div class="task-actions">
+                    <a href="{{ url_for('delete', task_id=task.id) }}">Delete</a>
+                    <a href="{{ url_for('update', task_id=task.id) }}">Update</a>
+                </div>
             </li>
             {% endfor %}
         {% else %}
             <li>No tasks available.</li>
         {% endif %}
     </ul>
+      
 </div>
 
-<!-- JavaScript for autocomplete functionality -->
 <script>
-    function fetchSuggestions() {
-        const query = document.getElementById('searchBox').value;
-        if (query.length < 1) {
-            document.getElementById('suggestionsList').innerHTML = '';
-            return;
-        }
-
-        fetch(`/autocomplete?prefix=${query}`)
-            .then(response => response.json())
-            .then(suggestions => {
-                const suggestionsList = document.getElementById('suggestionsList');
-                suggestionsList.innerHTML = '';
-                suggestions.forEach(title => {
-                    const li = document.createElement('li');
-                    li.textContent = title;
-                    suggestionsList.appendChild(li);
-                });
-            });
+    function toggleComplete(taskId) {
+        const taskElement = document.getElementById(`task-${taskId}`);
+        taskElement.classList.toggle('completed');
     }
 </script>
 {% endblock %}

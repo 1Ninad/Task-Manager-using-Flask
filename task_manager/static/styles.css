@@ -1,169 +1,113 @@
-/* General body and font styles */
 body {
     font-family: 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 500;
-    background-color: rgb(36, 38, 38); /* Background color */
-    color: rgb(222, 222, 222); /* Font color */
-    margin: 0; /* Remove default margin for body */
-    padding: 20px; /* Add padding for body */
+    background-color: rgb(255, 255, 255);
+    color: rgb(39, 39, 39);
+    margin: 0;
+    padding: 20px;
 }
 
-/* Additional styles for action buttons */
 .action-button {
-    background-color: rgb(57, 59, 59); /* Button background */
-    color: rgb(222, 222, 222); /* Text color */
-    padding: 10px 15px; /* Padding for buttons */
-    border: none; /* No border */
-    border-radius: 5px; /* Rounded corners */
-    margin-left: 10px; /* Space between buttons */
-    text-decoration: none; /* Remove underline */
+    background-color: rgb(130, 134, 141);
+    color: #000000;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 15px;
+    margin-left: 0px;
+    text-decoration: none;
+    font-weight: 1000;
+    display: inline-block;
+    white-space: nowrap;
 }
 
 .action-button:hover {
-    background-color: rgb(255, 158, 11); /* Hover color */
-    color: rgb(36, 38, 38); /* Change text color on hover */
+    background-color: rgb(255, 158, 11);
+    color: rgb(255, 255, 255);
 }
 
-/* Container for the entire page */
-.container {
-    display: flex;
-    justify-content: space-between; /* Space between form and task list */
-    gap: 50px; /* Space between form and task list */
-    align-items: flex-start; /* Align to top */
-    padding-left: 20px; /* Space from the left edge of the page */
-    flex-wrap: wrap; /* Ensure wrapping on smaller screens */
-}
 
-/* Form container: aligned at the top-left */
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 15px;
-    width: 300px; /* Fixed width for form */
-}
-
-/* Input and button styles inside the form */
 form input, form textarea, form select, form button {
-    margin-bottom: 15px; /* Space between elements */
-    width: 100%; /* Full width for inputs */
+    margin-bottom: 15px;
+    width: 100%;
+    border: none;
+    outline: none;
 }
 
-/* Search input box styles */
 form input[name="search"] {
-    margin-bottom: 10px; /* Space between search and the next input */
+    margin-bottom: 10px;
     padding: 10px;
     border-radius: 12px;
-    border: 1px solid rgb(57, 59, 59); /* Match task padding color */
-    background-color: rgb(57, 59, 59); /* Match background */
-    color: rgb(222, 222, 222); /* Text color */
-    outline: none; /* Remove outline */
+    border: 1px solid rgb(230, 230, 230);
+    background-color: rgb(230, 230, 230);
+    color: rgb(0, 0, 0);
+    outline: none;
+    border-radius: 12px;
+    border: 1px solid rgb(230, 230, 230);
+    background-color: rgb(230, 230, 230);
+    color: rgb(0, 0, 0);
+    outline: none;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+    padding-left: 20px;
+    flex-wrap: wrap;
 }
 
-/* Styles for title, description, and priority input fields */
 form input[name="title"], 
 form textarea[name="description"], 
 form input[name="priority"] {
-    padding: 10px; /* Add padding */
-    border-radius: 12px; /* Rounded corners */
-    border: 1px solid rgb(57, 59, 59); /* Match task padding color */
-    background-color: rgb(57, 59, 59); /* Set the same background as the search input */
-    color: rgb(222, 222, 222); /* Font color */
-    outline: none; /* Remove default outline */
+    padding: 8px;
+    border-radius: 12px;
+    background-color: rgb(230, 230, 230);
+    color: rgb(0, 0, 0);
+    outline: none;
+    padding-left: 0px;
 }
 
-/* Submit button style */
-form button {
-    width: auto; /* Auto size based on text */
-    padding: 10px 15px;
-    font-size: 15px;
-    font-weight: 500;
-    background-color: rgb(57, 59, 59); /* Set to match Delete button color */
-    color: rgb(222, 222, 222); /* Text color */
-    border: none; /* No border */
-    border-radius: 5px; /* Rounded corners */
-}
-
-form button:hover {
-    background-color: rgb(255, 158, 11); /* Hover color for submit button */
-    color: rgb(36, 38, 38); /* Change text color on hover */
-}
-
-/* Task list styles */
 ul {
     list-style-type: none;
     padding: 0;
     margin-top: 20px;
-    flex-grow: 1; /* Ensure it takes the remaining space */
+    flex-grow: 1;
     width: 100%;
 }
 
-/* Task item styles */
 li {
-    display: flex; /* Flexbox for task layout */
-    justify-content: space-between; /* Space between task text and action buttons */
-    align-items: center; /* Vertically align items */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin: 10px 0;
     padding: 10px;
-    background-color: rgb(57, 59, 59); /* Task background color */
+    background-color: rgb(230, 230, 230);
     border-radius: 10px;
-    color: rgb(222, 222, 222); /* Font color for tasks */
+    color: rgb(39, 39, 39);
 }
 
-/* Task details on the left */
 li .task-details {
-    flex-grow: 1; /* Ensure task details take up available space */
+    flex-grow: 1;
 }
 
-/* Align the buttons on the right */
 li .task-actions {
     display: flex;
-    justify-content: flex-end; /* Align buttons to the right */
-    gap: 10px; /* Space between Delete and Update */
+    justify-content: flex-end;
+    gap: 10px;
 }
 
-/* Link styles for Delete and Update */
 ul li a {
-    color: rgb(255, 158, 11); /* Orange color */
-    text-align: right;        /* Align text to the right */
+    color: rgb(255, 185, 81);
 }
 
 ul li a:hover {
     text-decoration: underline;
-    color: rgb(255, 158, 11); /* Keep the hover color the same */
+    color: rgb(255, 158, 11);
 }
 
-#suggestionsList {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    border: 1px solid rgb(57, 59, 59); /* Match your input border color */
-    position: absolute; /* Allow for dropdown appearance */
-    background-color: rgb(57, 59, 59); /* Match background color */
-    z-index: 1000; /* Ensure it appears above other elements */
-    width: calc(100% - 20px); /* Adjust width to match input */
-}
-
-#suggestionsList li {
-    padding: 8px;
-    cursor: pointer;
-}
-
-#suggestionsList li:hover {
-    background-color: rgb(255, 158, 11); /* Highlight on hover */
-}
-
-/* Media Queries for Responsiveness */
-
-/* For screens smaller than 768px (tablets, phones) */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column; /* Stack the form and task list vertically */
-        gap: 20px; /* Smaller gap */
-    }
-
-    ul {
-        width: 100%; /* Full width for task list on smaller screens */
-    }
+.completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+    color: rgb(150, 150, 150);
 }
