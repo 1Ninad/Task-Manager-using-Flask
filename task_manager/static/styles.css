@@ -76,6 +76,14 @@ form input[name="priority"] {
     background-color: rgb(230, 230, 230);
     color: rgb(25, 24, 24);
     outline: none;
+    resize: none;
+}
+
+form input[name="title"]::placeholder, 
+form textarea[name="description"]::placeholder, 
+form input[name="priority"]::placeholder {
+    font-family: Menlo, monospace;
+    font-size: 0.75rem;
 }
 
 ul {
