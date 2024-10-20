@@ -5,17 +5,17 @@ from bst import BST
 from sorting import mergeSort
 from stack import Stack
 
-# Stack - undo
-action_history = Stack()  
-# Stack - redo
-redo_stack = Stack()  
-# BST - taskSearch
-tasks_bst = BST()  
+action_history = Stack()  # stack-undo
+redo_stack = Stack()  # stack-redo
+tasks_bst = BST()  # BST-taskSearch
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
 db.init_app(app)
+
+
+
 
 @app.before_first_request
 def create_tables():
@@ -26,6 +26,9 @@ def populate_bst_with_tasks():
     tasks = Task.query.all()
     for task in tasks:
         tasks_bst.insert((task.title, task))
+
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -53,6 +56,9 @@ def index():
 
     return render_template('tasks.html', form=form, tasks=tasks, search_query=search_query)
 
+
+
+
 @app.route('/delete/<int:task_id>')
 def delete(task_id):
     task = Task.query.get(task_id)
@@ -69,6 +75,9 @@ def delete(task_id):
         tasks_bst.remove(task.title)  # BST - taskRemove
 
     return redirect(url_for('index'))
+
+
+
 
 @app.route('/undo')
 def undo():
@@ -95,6 +104,8 @@ def undo():
 
     return redirect(url_for('index'))
 
+
+
 @app.route('/redo')
 def redo():
     if not redo_stack.is_empty():
@@ -115,6 +126,8 @@ def redo():
     return redirect(url_for('index'))
 
 @app.route('/update/<int:task_id>', methods=['GET', 'POST'])
+
+
 def update(task_id):
     task = Task.query.get(task_id)
     form = TaskForm(obj=task)
