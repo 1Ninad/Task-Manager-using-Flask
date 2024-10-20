@@ -4,8 +4,7 @@
 
 <div class="container">
     <form method="GET">
-        <input type="text" id="searchBox" onkeyup="fetchSuggestions()" placeholder="Search tasks..." name="search" value="{{ search_query }}">
-
+        <input type="text" id="searchBox" onkeyup="fetchSuggestions()" size="5%" placeholder="Search" name="search" value="{{ search_query }}">
         <button class="action-button">Search</button>
         <button class="action-button">Undo</button>
         
@@ -15,11 +14,13 @@
         {{ form.hidden_tag() }}
         <div>
             {{ form.title.label }} 
-            {{ form.title(size=30, class_='action-button') }}<br>
+            {{ form.title(size=30, class_='input-field', placeholder="Title") }}<br>
+            
             {{ form.description.label }} 
-            {{ form.description(cols=30, rows=5, class_='action-button') }}<br>
+            {{ form.description(size=3, class_='input-field', placeholder="Description") }}<br>
+            
             {{ form.priority.label }} 
-            {{ form.priority(size=3, class_='action-button') }}<br>
+            {{ form.priority(size=3, class_='input-field', placeholder="Priority") }}<br>
             {{ form.submit(class_='action-button') }} 
         </div>
     </form>
