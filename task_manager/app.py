@@ -86,11 +86,15 @@ def undo():
         action_type = last_action[0]
 
         if action_type == 'add':
+            # If the last action was adding a task, we undo by removing the task
             task = last_action[1]
             db.session.delete(task)
             db.session.commit()
+            tasks_bst.remove(task.title)  # Remove from BST
             redo_stack.push(('delete', task))  # Stack - redoPush
+
         elif action_type == 'delete':
+            # If the last action was deleting a task, we undo by restoring the task
             task_data = last_action[1]
             restored_task = Task(
                 id=task_data['id'],
@@ -100,6 +104,7 @@ def undo():
             )
             db.session.add(restored_task)
             db.session.commit()
+            tasks_bst.insert((restored_task.title, restored_task))  # Reinsert into BST
             redo_stack.push(('add', restored_task))  # Stack - redoPush
 
     return redirect(url_for('index'))
