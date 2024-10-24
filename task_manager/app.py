@@ -2,7 +2,6 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify
 from models import db, Task
 from forms import TaskForm
 from bst import BST
-from sorting import mergeSort
 from stack import Stack
 
 action_history = Stack()  # stack-undo
@@ -13,8 +12,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
 db.init_app(app)
-
-
 
 
 @app.before_first_request
@@ -34,6 +31,12 @@ def populate_bst_with_tasks():
 def index():
     form = TaskForm()
     if form.validate_on_submit():
+        # UPDATED
+        existing_task = Task.query.filter_by(priority=form.priority.data).first()
+        if existing_task:
+            # MSG
+            return render_template('tasks.html', form=form, tasks=Task.query.all(), error="Task with this priority already exists")
+        
         new_task = Task(
             title=form.title.data,
             description=form.description.data,
@@ -52,9 +55,10 @@ def index():
     else:
         tasks = Task.query.all()
 
-    tasks = mergeSort(tasks, key=lambda task: task.priority)  # Sorting - taskSort
+    tasks = sorted(tasks, key=lambda task: task.priority)
 
     return render_template('tasks.html', form=form, tasks=tasks, search_query=search_query)
+
 
 
 
@@ -86,7 +90,7 @@ def undo():
         action_type = last_action[0]
 
         if action_type == 'add':
-            # If the last action was adding a task, we undo by removing the task
+            
             task = last_action[1]
             db.session.delete(task)
             db.session.commit()
@@ -94,7 +98,7 @@ def undo():
             redo_stack.push(('delete', task))  # Stack - redoPush
 
         elif action_type == 'delete':
-            # If the last action was deleting a task, we undo by restoring the task
+            
             task_data = last_action[1]
             restored_task = Task(
                 id=task_data['id'],
